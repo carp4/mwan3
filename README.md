@@ -46,7 +46,18 @@ cannot bind from a deleted address. IPv4 keeps the existing `WRAP` path.
 
 ## Using it
 
-Drop this directory into an OpenWrt package feed (e.g. as
+Pull it in as a feed from this repository:
+
+```sh
+# feeds.conf
+src-git mwan3 https://github.com/carp4/mwan3.git;main
+
+./scripts/feeds update mwan3
+./scripts/feeds uninstall mwan3     # drop the openwrt/packages-feed copy first
+./scripts/feeds install mwan3
+```
+
+Alternatively, drop this directory into an OpenWrt package feed (e.g. as
 `feeds/packages/net/mwan3`) and rebuild mwan3 — nothing else changes. When a
 feeds update reverts the tracker to upstream, run:
 
