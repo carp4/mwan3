@@ -1,9 +1,14 @@
 #!/bin/sh
-# Re-apply the mwan3 IPv6 track-source re-derive fix to a pristine mwan3 tree.
+# Re-apply the mwan3 IPv6 tracking fix to a pristine mwan3 tree.
 #
 # Why this exists: an OpenWrt feeds update (or a fresh checkout) reverts
 # files/usr/sbin/mwan3track to the upstream version, silently dropping the fix
 # below. Run this script after any feeds refresh to confirm the fix is back.
+#
+# The patch carries both parts of the fix: refresh_src_ip(), which re-derives
+# the tracking source every round, and the probe path itself, which now sends
+# both families through the sockopt wrapper (WRAP/WRAP_SRC) so the probe's
+# replies come back over the member's own uplink.
 #
 # The script only restores the tracker; it does NOT bump PKG_RELEASE in the
 # package Makefile. If you re-apply over a stored baseline that already carries
@@ -35,8 +40,8 @@ TRACKER="$TARGET/files/usr/sbin/mwan3track"
 	exit 2
 }
 
-if grep -q '^refresh_src_ip()' "$TRACKER"; then
-	echo "already patched: refresh_src_ip() present in $TRACKER (nothing to do)"
+if grep -q '^WRAP_SRC()' "$TRACKER"; then
+	echo "already patched: WRAP_SRC() present in $TRACKER (nothing to do)"
 	exit 0
 fi
 
